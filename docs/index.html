@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Campus Jobs – Frontend</title>
   <style>
-    :root { color-scheme: light; }
     body{font-family:system-ui,"Segoe UI",Arial,sans-serif;background:#f5f7fb;margin:0;min-height:100vh;display:grid;place-items:center}
     .card{background:#fff;padding:24px 28px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.08);width:min(92vw,420px);text-align:center}
     h1{font-size:24px;margin:4px 0 12px;color:#1f2937}
@@ -18,31 +17,25 @@
 <body>
   <div class="card">
     <h1>Frontend ↔ Backend</h1>
-    <p>กดปุ่มเพื่อทดสอบเรียก <code>/ping</code> จาก Backend (Render)</p>
+    <p>ทดสอบเรียก <code>/ping</code> จาก Backend (Render)</p>
 
-    <button id="btn">ทดสอบ Backend</button>
+    <button onclick="testPing()">ทดสอบ Backend</button>
     <pre id="out">ผลลัพธ์จะอยู่ตรงนี้</pre>
   </div>
 
-  <script defer>
-    document.addEventListener("DOMContentLoaded", () => {
-      const API = "https://test261-2.onrender.com";
-      const btn = document.getElementById("btn");
+  <script>
+    const API = "https://test261-2.onrender.com";
+    async function testPing(){
       const out = document.getElementById("out");
-
-      btn.onclick = async () => {
-        out.textContent = "กำลังเชื่อมต่อ...";
-        try {
-          const r = await fetch(`${API}/ping`, { method: "GET" });
-          const t = await r.text();
-          out.textContent = `status ${r.status}: ${t}`;
-          console.log("OK", r.status, t);
-        } catch (e) {
-          out.textContent = "ERR: " + (e?.message || e);
-          console.error("FETCH ERROR", e);
-        }
-      };
-    });
+      out.textContent = "กำลังเชื่อมต่อ...";
+      try{
+        const r = await fetch(API + "/ping");
+        const t = await r.text();
+        out.textContent = `status ${r.status}: ${t}`;
+      }catch(e){
+        out.textContent = "ERR: " + (e?.message || e);
+      }
+    }
   </script>
 </body>
 </html>
