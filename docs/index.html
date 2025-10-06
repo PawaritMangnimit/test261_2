@@ -1,41 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Campus Jobs – Frontend</title>
-  <style>
-    body{font-family:system-ui,"Segoe UI",Arial,sans-serif;background:#f5f7fb;margin:0;min-height:100vh;display:grid;place-items:center}
-    .card{background:#fff;padding:24px 28px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.08);width:min(92vw,420px);text-align:center}
-    h1{font-size:24px;margin:4px 0 12px;color:#1f2937}
-    p{margin:0 0 16px;color:#4b5563}
-    button{background:#2563eb;color:#fff;border:0;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:600}
-    button:hover{background:#1d4ed8}
-    pre{background:#eef2f7;padding:12px;border-radius:10px;text-align:left;overflow:auto;margin-top:12px}
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Frontend ↔ Backend</h1>
-    <p>ทดสอบเรียก <code>/ping</code> จาก Backend (Render)</p>
-
-    <button onclick="testPing()">ทดสอบ Backend</button>
-    <pre id="out">ผลลัพธ์จะอยู่ตรงนี้</pre>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Campus Jobs – TU Login (Prototype)</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Arial,sans-serif;background:#f5f7fb;margin:0;min-height:100vh;display:grid;place-items:center}
+  .card{background:#fff;padding:24px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.08);width:min(92vw,420px)}
+  h1{margin:0 0 12px}
+  input,button{width:100%;padding:10px;border-radius:10px;border:1px solid #d1d5db}
+  button{background:#2563eb;color:#fff;border:0;margin-top:10px;cursor:pointer}
+  pre{background:#eef2f7;padding:12px;border-radius:10px;overflow:auto}
+  .row{display:grid;gap:10px}
+</style>
+<div class="card">
+  <h1>ทดสอบ TU Login</h1>
+  <div class="row">
+    <input id="u" placeholder="UserName (TU)" autocomplete="username">
+    <input id="p" type="password" placeholder="PassWord (TU)" autocomplete="current-password">
+    <button onclick="doLogin()">เข้าสู่ระบบผ่าน TU</button>
+    <button onclick="testPing()">ทดสอบ /ping</button>
+    <pre id="out">ผลลัพธ์จะแสดงตรงนี้</pre>
   </div>
+</div>
+<script>
+  const API = "https://<YOUR-BACKEND-DOMAIN>"; // เปลี่ยนเป็น URL จาก Render เช่น https://test261-2.onrender.com
 
-  <script>
-    const API = "https://test261-2.onrender.com";
-    async function testPing(){
-      const out = document.getElementById("out");
-      out.textContent = "กำลังเชื่อมต่อ...";
-      try{
-        const r = await fetch(API + "/ping");
-        const t = await r.text();
-        out.textContent = `status ${r.status}: ${t}`;
-      }catch(e){
-        out.textContent = "ERR: " + (e?.message || e);
-      }
+  async function testPing(){
+    const out = document.getElementById("out");
+    out.textContent = "calling /ping...";
+    const r = await fetch(API + "/ping");
+    out.textContent = await r.text();
+  }
+
+  async function doLogin(){
+    const out = document.getElementById("out");
+    const body = { UserName: document.getElementById("u").value, PassWord: document.getElementById("p").value };
+    out.textContent = "logging in...";
+    try{
+      const r = await fetch(API + "/tu/login", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(body)
+      });
+      const txt = await r.text();
+      out.textContent = `status ${r.status}\n` + txt;
+    }catch(e){
+      out.textContent = "ERR: " + e.message;
     }
-  </script>
-</body>
+  }
+</script>
 </html>
