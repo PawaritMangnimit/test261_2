@@ -12,19 +12,23 @@ public class UniversityProxyController {
 
   private final RestTemplate http = new RestTemplate();
 
-  @Value("${tu.api.url:https://restapi.tu.ac.th/tuapi/Authkey}")
-  private String tuUrl;
+  @Value("${tu.auth.url}")      // URL จาก application.properties
+  private String tuAuthUrl;
 
-  @Value("${tu.api.token:}") // รับจาก ENV บน Render
+  @Value("${tu.api.token}")     // ค่า Application-Key จาก ENV
   private String tuToken;
 
-  @GetMapping("/authkey")
-  public ResponseEntity<String> authkey() {
+  // รับ {"UserName":"...","PassWord":"..."} จาก frontend แล้วส่งต่อไป TU
+  public static class TuCred { public String UserName; public String PassWord; }
+
+  @PostMapping("/login")
+  public ResponseEntity<String> login(@RequestBody TuCred cred) {
     HttpHeaders h = new HttpHeaders();
-    h.setBearerAuth(tuToken);
     h.setContentType(MediaType.APPLICATION_JSON);
-    var req = new HttpEntity<Void>(h);
-    var res = http.exchange(tuUrl, HttpMethod.GET, req, String.class);
+    h.set("Application-Key", tuToken); // <<=== HEADER
+
+    HttpEntity<TuCred> req = new HttpEntity<>(cred, h); // <<=== BODY
+    ResponseEntity<String> res = http.postForEntity(tuAuthUrl, req, String.class);
     return ResponseEntity.status(res.getStatusCode()).body(res.getBody());
   }
 }
